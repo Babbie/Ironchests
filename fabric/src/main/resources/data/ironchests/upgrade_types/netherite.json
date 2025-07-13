@@ -1,4 +1,6 @@
 {
   "to": "netherite_chest",
-  "from": "diamond_chest"
+  "from": "diamond_chest",
+  "toBarrel": "netherite_barrel",
+  "fromBarrel": "diamond_barrel"
 }

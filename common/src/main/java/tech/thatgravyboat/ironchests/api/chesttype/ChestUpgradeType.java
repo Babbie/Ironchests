@@ -6,16 +6,18 @@ import tech.thatgravyboat.ironchests.common.registry.custom.ChestTypeRegistry;
 
 import java.util.Optional;
 
-public record ChestUpgradeType(ChestType from, ChestType to) {
+public record ChestUpgradeType(ChestType from, ChestType to, ChestType fromBarrel, ChestType toBarrel) {
 
     public static Codec<ChestUpgradeType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("from").forGetter(upgrade -> Optional.of(upgrade.from.getId())),
-            Codec.STRING.fieldOf("to").forGetter(upgrade -> upgrade.to.getId())
+            Codec.STRING.fieldOf("to").forGetter(upgrade -> upgrade.to.getId()),
+            Codec.STRING.optionalFieldOf("fromBarrel").forGetter(upgrade -> Optional.of(upgrade.fromBarrel.getId())),
+            Codec.STRING.fieldOf("toBarrel").forGetter(upgrade -> upgrade.toBarrel.getId())
     ).apply(instance, ChestUpgradeType::new));
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public ChestUpgradeType(Optional<String> from, String to) {
-        this(from.map(ChestUpgradeType::get).orElse(null), get(to));
+    public ChestUpgradeType(Optional<String> from, String to, Optional<String> fromBarrel, String toBarrel) {
+        this(from.map(ChestUpgradeType::get).orElse(null), get(to), fromBarrel.map(ChestUpgradeType::get).orElse(null), get(toBarrel));
     }
 
     public static ChestType get(String id) {

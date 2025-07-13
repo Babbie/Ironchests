@@ -1,4 +1,6 @@
 {
   "to": "obsidian_chest",
-  "from": "diamond_chest"
+  "from": "diamond_chest",
+  "toBarrel": "obsidian_barrel",
+  "fromBarrel": "diamond_barrel"
 }

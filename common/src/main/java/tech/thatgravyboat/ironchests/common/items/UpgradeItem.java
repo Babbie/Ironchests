@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,9 +47,13 @@ public class UpgradeItem extends Item {
         if (blockEntity instanceof GenericChestBlockEntity chestEntity){
 
             if (!chestEntity.canOpen(context.getPlayer())) return InteractionResult.PASS;
-            if(!chestEntity.getChestType().equals(type.from())) return InteractionResult.PASS;
+            if(!chestEntity.getChestType().equals(type.from()) && !chestEntity.getChestType().equals(type.fromBarrel())) return InteractionResult.PASS;
 
-            UpgradeItem.changeToChest(level, pos, chestEntity, type.to());
+            if (chestEntity.getChestType().equals(type.from())) {
+                UpgradeItem.changeToChest(level, pos, chestEntity, type.to());
+            } else {
+                UpgradeItem.changeToChest(level, pos, chestEntity, type.toBarrel());
+            }
             context.getItemInHand().shrink(1);
 
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -70,6 +75,36 @@ public class UpgradeItem extends Item {
             BlockState blockState = type.to().registries().getBlock().get().withPropertiesOf(context.getLevel().getBlockState(pos));
             GenericChestBlockEntity chestBlockEntity = type.to().registries().getBlockEntity().get().create(context.getClickedPos(), blockState);
             Component displayName = chestEntity.getCustomName();
+
+            if (chestBlockEntity == null) return InteractionResult.PASS;
+
+            level.removeBlockEntity(pos);
+            level.removeBlock(pos, false);
+
+            level.setBlock(pos, blockState, 3);
+            level.setBlockEntity(chestBlockEntity);
+
+            context.getItemInHand().shrink(1);
+
+            if (displayName != null) chestBlockEntity.setCustomName(displayName);
+            chestBlockEntity.setItems(contents);
+
+            return InteractionResult.CONSUME;
+        }
+
+        if (blockEntity instanceof BarrelBlockEntity barrelEntity){
+
+            if (!state.is(REPLACEABLE_CHEST_TAG)) return InteractionResult.PASS;
+            if (type.fromBarrel() != null) return InteractionResult.PASS;
+            if (!barrelEntity.canOpen(context.getPlayer())) return InteractionResult.PASS;
+            if (level.isClientSide) return InteractionResult.SUCCESS;
+
+            NonNullList<ItemStack> contents = NonNullList.withSize(barrelEntity.getContainerSize(), ItemStack.EMPTY);
+            for (int i = 0; i < barrelEntity.getContainerSize(); i++) contents.set(i, barrelEntity.getItem(i));
+
+            BlockState blockState = type.toBarrel().registries().getBlock().get().withPropertiesOf(context.getLevel().getBlockState(pos));
+            GenericChestBlockEntity chestBlockEntity = type.toBarrel().registries().getBlockEntity().get().create(context.getClickedPos(), blockState);
+            Component displayName = barrelEntity.getCustomName();
 
             if (chestBlockEntity == null) return InteractionResult.PASS;
 

@@ -11,10 +11,5 @@
     "explosionResistance": 0.5,
     "destroyTime": 0.5,
     "sound": "gravel"
-  },
-  "predicate": {
-    "items": [
-      "minecraft:dirt"
-    ]
   }
 }

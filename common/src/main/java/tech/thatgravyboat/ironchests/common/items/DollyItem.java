@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -68,7 +69,7 @@ public class DollyItem extends Item {
             return InteractionResult.SUCCESS;
         }
 
-        if (!state.is(NONPICKABLE_CHEST_TAG) && !hasChest(stack) && ((blockEntity instanceof GenericChestBlockEntity chest && chest.viewers() == 0) || (blockEntity instanceof ChestBlockEntity && ChestBlockEntity.getOpenCount(level, pos) == 0))){
+        if (!state.is(NONPICKABLE_CHEST_TAG) && !hasChest(stack) && ((blockEntity instanceof GenericChestBlockEntity chest && chest.viewers() == 0) || (blockEntity instanceof ChestBlockEntity && ChestBlockEntity.getOpenCount(level, pos) == 0) || (blockEntity instanceof BarrelBlockEntity))){
             stack.getOrCreateTag().put("BlockStateTag", NbtUtils.writeBlockState(state));
             stack.getOrCreateTag().put("BlockEntityTag", blockEntity.saveWithId());
             level.removeBlockEntity(pos);
@@ -109,7 +110,7 @@ public class DollyItem extends Item {
             newState = newState.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
         }
         if (newState.hasProperty(BlockStateProperties.FACING)){
-            newState = newState.setValue(BlockStateProperties.FACING, context.getHorizontalDirection().getOpposite());
+            newState = newState.setValue(BlockStateProperties.FACING, context.getNearestLookingDirection().getOpposite());
         }
         return newState;
     }

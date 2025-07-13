@@ -29,6 +29,12 @@ public class ChestUpgradeTypeRegistry implements IUpgradeRegistry {
         if (type.from() != null && type.from().blockType() != ChestBlockType.CHEST) {
             throw new IllegalArgumentException("Chest Upgrade Type must be for a chest.");
         }
+        if (type.toBarrel().blockType() != ChestBlockType.BARREL) {
+            throw new IllegalArgumentException("Barrel Upgrade Type must be for a barrel.");
+        }
+        if (type.fromBarrel() != null && type.fromBarrel().blockType() != ChestBlockType.BARREL) {
+            throw new IllegalArgumentException("Barrel Upgrade Type must be for a barrel.");
+        }
         UPGRADES.add(type);
     }
 }

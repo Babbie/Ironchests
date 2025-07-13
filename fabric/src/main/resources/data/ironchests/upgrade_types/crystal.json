@@ -1,4 +1,6 @@
 {
   "to": "crystal_chest",
-  "from": "diamond_chest"
+  "from": "diamond_chest",
+  "toBarrel": "crystal_barrel",
+  "fromBarrel": "diamond_barrel"
 }
